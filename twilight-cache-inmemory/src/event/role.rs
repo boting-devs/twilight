@@ -1,4 +1,12 @@
-use crate::{config::ResourceType, InMemoryCache, UpdateCache};
+use crate::{
+    config::ResourceType,
+    interfaces::{
+        ChannelInterface, CurrentUserInterface, EmojiInterface, GuildIntegrationInterface,
+        GuildInterface, MemberInterface, MessageInterface, PresenceInterface, RoleInterface,
+        StageInstanceInterface, StickerInterface, UserInterface, VoiceStateInterface,
+    },
+    InMemoryCache, UpdateCache,
+};
 use twilight_model::{
     gateway::payload::incoming::{RoleCreate, RoleDelete, RoleUpdate},
     guild::Role,
@@ -8,7 +16,37 @@ use twilight_model::{
     },
 };
 
-impl InMemoryCache {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    InMemoryCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    >
+{
     pub(crate) fn cache_roles(
         &self,
         guild_id: Id<GuildMarker>,
@@ -27,7 +65,7 @@ impl InMemoryCache {
             .insert(role.id);
 
         // Insert the role into the all roles map
-        crate::upsert_guild_item(&self.roles, guild_id, role.id, role);
+        crate::upsert_guild_item(&self.roles, guild_id, role.id, CachedRole::from(role));
     }
 
     fn delete_role(&self, role_id: Id<RoleMarker>) {
@@ -39,8 +77,55 @@ impl InMemoryCache {
     }
 }
 
-impl UpdateCache for RoleCreate {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for RoleCreate
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::ROLE) {
             return;
         }
@@ -49,8 +134,55 @@ impl UpdateCache for RoleCreate {
     }
 }
 
-impl UpdateCache for RoleDelete {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for RoleDelete
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::ROLE) {
             return;
         }
@@ -59,8 +191,55 @@ impl UpdateCache for RoleDelete {
     }
 }
 
-impl UpdateCache for RoleUpdate {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for RoleUpdate
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::ROLE) {
             return;
         }
@@ -71,12 +250,12 @@ impl UpdateCache for RoleUpdate {
 
 #[cfg(test)]
 mod tests {
-    use crate::{test, InMemoryCache};
+    use crate::{test, DefaultInMemoryCache};
     use twilight_model::{gateway::payload::incoming::RoleCreate, id::Id};
 
     #[test]
     fn insert_role_on_event() {
-        let cache = InMemoryCache::new();
+        let cache = DefaultInMemoryCache::new();
 
         cache.update(&RoleCreate {
             guild_id: Id::new(1),
@@ -93,7 +272,7 @@ mod tests {
 
     #[test]
     fn cache_role() {
-        let cache = InMemoryCache::new();
+        let cache = DefaultInMemoryCache::new();
 
         // Single inserts
         {

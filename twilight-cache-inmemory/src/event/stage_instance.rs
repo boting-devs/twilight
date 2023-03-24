@@ -1,4 +1,12 @@
-use crate::{config::ResourceType, InMemoryCache, UpdateCache};
+use crate::{
+    config::ResourceType,
+    interfaces::{
+        ChannelInterface, CurrentUserInterface, EmojiInterface, GuildIntegrationInterface,
+        GuildInterface, MemberInterface, MessageInterface, PresenceInterface, RoleInterface,
+        StageInstanceInterface, StickerInterface, UserInterface, VoiceStateInterface,
+    },
+    InMemoryCache, UpdateCache,
+};
 use twilight_model::{
     channel::StageInstance,
     gateway::payload::incoming::{StageInstanceCreate, StageInstanceDelete, StageInstanceUpdate},
@@ -8,7 +16,37 @@ use twilight_model::{
     },
 };
 
-impl InMemoryCache {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    InMemoryCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    >
+{
     pub(crate) fn cache_stage_instances(
         &self,
         guild_id: Id<GuildMarker>,
@@ -29,7 +67,7 @@ impl InMemoryCache {
             &self.stage_instances,
             guild_id,
             stage_instance.id,
-            stage_instance,
+            CachedStageInstance::from(stage_instance),
         );
     }
 
@@ -44,8 +82,55 @@ impl InMemoryCache {
     }
 }
 
-impl UpdateCache for StageInstanceCreate {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for StageInstanceCreate
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::STAGE_INSTANCE) {
             return;
         }
@@ -54,8 +139,55 @@ impl UpdateCache for StageInstanceCreate {
     }
 }
 
-impl UpdateCache for StageInstanceDelete {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for StageInstanceDelete
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::STAGE_INSTANCE) {
             return;
         }
@@ -64,8 +196,55 @@ impl UpdateCache for StageInstanceDelete {
     }
 }
 
-impl UpdateCache for StageInstanceUpdate {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for StageInstanceUpdate
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::STAGE_INSTANCE) {
             return;
         }
@@ -76,7 +255,7 @@ impl UpdateCache for StageInstanceUpdate {
 
 #[cfg(test)]
 mod tests {
-    use crate::InMemoryCache;
+    use crate::DefaultInMemoryCache;
     use twilight_model::{
         channel::{stage_instance::PrivacyLevel, StageInstance},
         gateway::payload::incoming::{
@@ -87,7 +266,7 @@ mod tests {
 
     #[test]
     fn stage_channels() {
-        let cache = InMemoryCache::new();
+        let cache = DefaultInMemoryCache::new();
 
         let stage_instance = StageInstance {
             channel_id: Id::new(1),

@@ -1,10 +1,65 @@
-use crate::{config::ResourceType, InMemoryCache, UpdateCache};
+use crate::{
+    config::ResourceType,
+    interfaces::{
+        ChannelInterface, CurrentUserInterface, EmojiInterface, GuildIntegrationInterface,
+        GuildInterface, MemberInterface, MessageInterface, PresenceInterface, RoleInterface,
+        StageInstanceInterface, StickerInterface, UserInterface, VoiceStateInterface,
+    },
+    InMemoryCache, UpdateCache,
+};
 use twilight_model::gateway::payload::incoming::{
     ThreadCreate, ThreadDelete, ThreadListSync, ThreadUpdate,
 };
 
-impl UpdateCache for ThreadCreate {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for ThreadCreate
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::CHANNEL) {
             return;
         }
@@ -13,8 +68,55 @@ impl UpdateCache for ThreadCreate {
     }
 }
 
-impl UpdateCache for ThreadDelete {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for ThreadDelete
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::CHANNEL) {
             return;
         }
@@ -23,8 +125,55 @@ impl UpdateCache for ThreadDelete {
     }
 }
 
-impl UpdateCache for ThreadListSync {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for ThreadListSync
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::CHANNEL) {
             return;
         }
@@ -33,8 +182,55 @@ impl UpdateCache for ThreadListSync {
     }
 }
 
-impl UpdateCache for ThreadUpdate {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for ThreadUpdate
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::CHANNEL) {
             return;
         }

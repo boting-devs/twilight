@@ -1,6 +1,7 @@
 use serde::Serialize;
 use twilight_model::{
     application::interaction::application_command::InteractionMember,
+    gateway::payload::incoming::MemberUpdate,
     guild::{Member, MemberFlags, PartialMember},
     id::{
         marker::{RoleMarker, UserMarker},
@@ -9,9 +10,11 @@ use twilight_model::{
     util::{ImageHash, Timestamp},
 };
 
+use crate::MemberInterface;
+
 /// Computed fields required to complete a full cached member via
 /// [`CachedMember::from_interaction_member`] that are not otherwise present.
-pub(crate) struct ComputedInteractionMemberFields {
+pub struct ComputedInteractionMemberFields {
     pub avatar: Option<ImageHash>,
     pub deaf: Option<bool>,
     pub mute: Option<bool>,
@@ -100,10 +103,10 @@ impl CachedMember {
     pub const fn user_id(&self) -> Id<UserMarker> {
         self.user_id
     }
+}
 
-    /// Construct a cached member from its [`twilight_model`] form.
-    #[allow(clippy::missing_const_for_fn)]
-    pub(crate) fn from_model(member: Member) -> Self {
+impl From<Member> for CachedMember {
+    fn from(member: Member) -> Self {
         let Member {
             avatar,
             communication_disabled_until,
@@ -132,14 +135,21 @@ impl CachedMember {
             user_id: user.id,
         }
     }
+}
 
-    // clippy: the member field's destructor needs to drop
-    // clippy: the contents of `fields` is consumed
-    #[allow(clippy::missing_const_for_fn, clippy::needless_pass_by_value)]
-    pub(crate) fn from_interaction_member(
-        user_id: Id<UserMarker>,
-        member: InteractionMember,
-        fields: ComputedInteractionMemberFields,
+impl
+    From<(
+        Id<UserMarker>,
+        InteractionMember,
+        ComputedInteractionMemberFields,
+    )> for CachedMember
+{
+    fn from(
+        (user_id, member, fields): (
+            Id<UserMarker>,
+            InteractionMember,
+            ComputedInteractionMemberFields,
+        ),
     ) -> Self {
         let InteractionMember {
             avatar: _,
@@ -168,8 +178,10 @@ impl CachedMember {
             user_id,
         }
     }
+}
 
-    pub(crate) fn from_partial_member(user_id: Id<UserMarker>, member: PartialMember) -> Self {
+impl From<(Id<UserMarker>, PartialMember)> for CachedMember {
+    fn from((user_id, member): (Id<UserMarker>, PartialMember)) -> Self {
         let PartialMember {
             avatar,
             communication_disabled_until,
@@ -233,6 +245,40 @@ impl PartialEq<InteractionMember> for CachedMember {
             && self.nick == other.nick
             && self.premium_since == other.premium_since
             && self.roles == other.roles
+    }
+}
+
+impl MemberInterface for CachedMember {
+    fn roles(&self) -> &[Id<RoleMarker>] {
+        &self.roles
+    }
+
+    #[cfg(feature = "permission-calculator")]
+    fn communication_disabled_until(&self) -> Option<Timestamp> {
+        self.communication_disabled_until
+    }
+
+    fn avatar(&self) -> Option<ImageHash> {
+        self.avatar
+    }
+
+    fn deaf(&self) -> Option<bool> {
+        self.deaf
+    }
+
+    fn mute(&self) -> Option<bool> {
+        self.mute
+    }
+
+    fn update_with_member_update(&mut self, member_update: &MemberUpdate) {
+        self.avatar = member_update.avatar;
+        self.deaf = member_update.deaf.or_else(|| self.deaf());
+        self.mute = member_update.mute.or_else(|| self.mute());
+        self.nick = member_update.nick.clone();
+        self.roles = member_update.roles.clone();
+        self.joined_at = member_update.joined_at;
+        self.pending = member_update.pending;
+        self.communication_disabled_until = member_update.communication_disabled_until;
     }
 }
 

@@ -11,6 +11,7 @@ use twilight_model::{
         },
         Attachment, ChannelMention,
     },
+    gateway::payload::incoming::MessageUpdate,
     guild::PartialMember,
     id::{
         marker::{
@@ -21,6 +22,8 @@ use twilight_model::{
     },
     util::Timestamp,
 };
+
+use crate::MessageInterface;
 
 /// Information about the message interaction.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -282,9 +285,10 @@ impl CachedMessage {
     pub const fn webhook_id(&self) -> Option<Id<WebhookMarker>> {
         self.webhook_id
     }
+}
 
-    /// Construct a cached message from its [`twilight_model`] form.
-    pub(crate) fn from_model(message: Message) -> Self {
+impl From<Message> for CachedMessage {
+    fn from(message: Message) -> Self {
         let Message {
             activity,
             application,
@@ -352,9 +356,71 @@ impl CachedMessage {
     }
 }
 
-impl From<Message> for CachedMessage {
-    fn from(message: Message) -> Self {
-        Self::from_model(message)
+impl MessageInterface for CachedMessage {
+    fn update_with_message_update(&mut self, message_update: &MessageUpdate) {
+        if let Some(attachments) = &message_update.attachments {
+            self.attachments = attachments.clone();
+        }
+
+        if let Some(content) = &message_update.content {
+            self.content = content.clone();
+        }
+
+        if let Some(edited_timestamp) = message_update.edited_timestamp {
+            self.edited_timestamp.replace(edited_timestamp);
+        }
+
+        if let Some(embeds) = &message_update.embeds {
+            self.embeds = embeds.clone();
+        }
+
+        if let Some(mention_everyone) = message_update.mention_everyone {
+            self.mention_everyone = mention_everyone;
+        }
+
+        if let Some(mention_roles) = &message_update.mention_roles {
+            self.mention_roles = mention_roles.clone();
+        }
+
+        if let Some(mentions) = &message_update.mentions {
+            self.mentions = mentions.iter().map(|x| x.id).collect::<Vec<_>>();
+        }
+
+        if let Some(pinned) = message_update.pinned {
+            self.pinned = pinned;
+        }
+
+        if let Some(timestamp) = message_update.timestamp {
+            self.timestamp = timestamp;
+        }
+
+        if let Some(tts) = message_update.tts {
+            self.tts = tts;
+        }
+    }
+
+    fn reactions(&self) -> &[Reaction] {
+        &self.reactions
+    }
+
+    fn reactions_mut(&mut self) -> &mut [Reaction] {
+        &mut self.reactions
+    }
+
+    fn retain_reactions(&mut self, f: impl FnMut(&Reaction) -> bool) {
+        self.reactions.retain(f);
+    }
+
+    fn clear_reactions(&mut self) {
+        self.reactions.clear();
+    }
+
+    fn add_reaction(&mut self, reaction: Reaction) {
+        self.reactions.push(reaction);
+    }
+
+    fn remove_reaction(&mut self, idx: usize) {
+        self.reactions.remove(idx);
     }
 }
 

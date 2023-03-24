@@ -1,6 +1,20 @@
-use twilight_model::id::{
-    marker::{ChannelMarker, GuildMarker},
-    Id,
+use twilight_model::{
+    channel::{Channel, StageInstance},
+    guild::{GuildIntegration, Role},
+    id::{
+        marker::{ChannelMarker, GuildMarker},
+        Id,
+    },
+    user::{CurrentUser, User},
+};
+
+use crate::{
+    interfaces::{
+        ChannelInterface, GuildInterface, MemberInterface, MessageInterface, RoleInterface,
+        VoiceStateInterface,
+    },
+    model, CurrentUserInterface, EmojiInterface, GuildIntegrationInterface, PresenceInterface,
+    StageInstanceInterface, StickerInterface, UserInterface,
 };
 
 use super::InMemoryCache;
@@ -17,9 +31,9 @@ use super::InMemoryCache;
 /// Retrieve the number of users stored in the cache:
 ///
 /// ```no_run
-/// use twilight_cache_inmemory::InMemoryCache;
+/// use twilight_cache_inmemory::DefaultInMemoryCache;
 ///
-/// let cache = InMemoryCache::new();
+/// let cache = DefaultInMemoryCache::new();
 ///
 /// // later on...
 /// println!("user count: {}", cache.stats().users());
@@ -27,22 +41,137 @@ use super::InMemoryCache;
 ///
 /// [`channel_messages`]: Self::channel_messages
 /// [`users`]: Self::users
+#[allow(clippy::type_complexity)]
 #[derive(Clone, Debug)]
-pub struct InMemoryCacheStats<'a>(&'a InMemoryCache);
+pub struct InMemoryCacheStats<
+    'a,
+    CachedChannel: ChannelInterface = Channel,
+    CachedCurrentUser: CurrentUserInterface = CurrentUser,
+    CachedEmoji: EmojiInterface = model::CachedEmoji,
+    CachedGuild: GuildInterface = model::CachedGuild,
+    CachedGuildIntegration: GuildIntegrationInterface = GuildIntegration,
+    CachedMember: MemberInterface = model::CachedMember,
+    CachedMessage: MessageInterface = model::CachedMessage,
+    CachedPresence: PresenceInterface = model::CachedPresence,
+    CachedRole: RoleInterface = Role,
+    CachedStageInstance: StageInstanceInterface = StageInstance,
+    CachedSticker: StickerInterface = model::CachedSticker,
+    CachedUser: UserInterface = User,
+    CachedVoiceState: VoiceStateInterface = model::CachedVoiceState,
+>(
+    &'a InMemoryCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    >,
+);
 
-impl<'a> InMemoryCacheStats<'a> {
-    pub(super) const fn new(cache: &'a InMemoryCache) -> Self {
+impl<
+        'a,
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    InMemoryCacheStats<
+        'a,
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    >
+{
+    #[allow(clippy::type_complexity)]
+    pub(super) const fn new(
+        cache: &'a InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) -> Self {
         Self(cache)
     }
 
     /// Return an immutable reference to the underlying cache.
-    pub const fn cache_ref(&'a self) -> &'a InMemoryCache {
+    #[allow(clippy::type_complexity)]
+    pub const fn cache_ref(
+        &'a self,
+    ) -> &'a InMemoryCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > {
         self.0
     }
 
     /// Consume the statistics interface, returning the underlying cache
     /// reference.
-    pub const fn into_cache(self) -> &'a InMemoryCache {
+    #[allow(clippy::type_complexity)]
+    pub const fn into_cache(
+        self,
+    ) -> &'a InMemoryCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > {
         self.0
     }
 

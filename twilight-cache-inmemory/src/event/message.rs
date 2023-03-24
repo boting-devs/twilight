@@ -1,11 +1,66 @@
-use crate::{config::ResourceType, model::CachedMessage, InMemoryCache, UpdateCache};
+use crate::{
+    config::ResourceType,
+    interfaces::{
+        ChannelInterface, CurrentUserInterface, EmojiInterface, GuildIntegrationInterface,
+        GuildInterface, MemberInterface, MessageInterface, PresenceInterface, RoleInterface,
+        StageInstanceInterface, StickerInterface, UserInterface, VoiceStateInterface,
+    },
+    InMemoryCache, UpdateCache,
+};
 use std::borrow::Cow;
 use twilight_model::gateway::payload::incoming::{
     MessageCreate, MessageDelete, MessageDeleteBulk, MessageUpdate,
 };
 
-impl UpdateCache for MessageCreate {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for MessageCreate
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if cache.wants(ResourceType::USER) {
             cache.cache_user(Cow::Borrowed(&self.author), self.guild_id);
         }
@@ -41,8 +96,55 @@ impl UpdateCache for MessageCreate {
     }
 }
 
-impl UpdateCache for MessageDelete {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for MessageDelete
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::MESSAGE) {
             return;
         }
@@ -57,8 +159,55 @@ impl UpdateCache for MessageDelete {
     }
 }
 
-impl UpdateCache for MessageDeleteBulk {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for MessageDeleteBulk
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::MESSAGE) {
             return;
         }
@@ -78,59 +227,68 @@ impl UpdateCache for MessageDeleteBulk {
     }
 }
 
-impl UpdateCache for MessageUpdate {
-    fn update(&self, cache: &InMemoryCache) {
+impl<
+        CachedChannel: ChannelInterface,
+        CachedCurrentUser: CurrentUserInterface,
+        CachedEmoji: EmojiInterface,
+        CachedGuild: GuildInterface,
+        CachedGuildIntegration: GuildIntegrationInterface,
+        CachedMember: MemberInterface,
+        CachedMessage: MessageInterface,
+        CachedPresence: PresenceInterface,
+        CachedRole: RoleInterface,
+        CachedStageInstance: StageInstanceInterface,
+        CachedSticker: StickerInterface,
+        CachedUser: UserInterface,
+        CachedVoiceState: VoiceStateInterface,
+    >
+    UpdateCache<
+        CachedChannel,
+        CachedCurrentUser,
+        CachedEmoji,
+        CachedGuild,
+        CachedGuildIntegration,
+        CachedMember,
+        CachedMessage,
+        CachedPresence,
+        CachedRole,
+        CachedStageInstance,
+        CachedSticker,
+        CachedUser,
+        CachedVoiceState,
+    > for MessageUpdate
+{
+    fn update(
+        &self,
+        cache: &InMemoryCache<
+            CachedChannel,
+            CachedCurrentUser,
+            CachedEmoji,
+            CachedGuild,
+            CachedGuildIntegration,
+            CachedMember,
+            CachedMessage,
+            CachedPresence,
+            CachedRole,
+            CachedStageInstance,
+            CachedSticker,
+            CachedUser,
+            CachedVoiceState,
+        >,
+    ) {
         if !cache.wants(ResourceType::MESSAGE) {
             return;
         }
 
         if let Some(mut message) = cache.messages.get_mut(&self.id) {
-            if let Some(attachments) = &self.attachments {
-                message.attachments = attachments.clone();
-            }
-
-            if let Some(content) = &self.content {
-                message.content = content.clone();
-            }
-
-            if let Some(edited_timestamp) = self.edited_timestamp {
-                message.edited_timestamp.replace(edited_timestamp);
-            }
-
-            if let Some(embeds) = &self.embeds {
-                message.embeds = embeds.clone();
-            }
-
-            if let Some(mention_everyone) = self.mention_everyone {
-                message.mention_everyone = mention_everyone;
-            }
-
-            if let Some(mention_roles) = &self.mention_roles {
-                message.mention_roles = mention_roles.clone();
-            }
-
-            if let Some(mentions) = &self.mentions {
-                message.mentions = mentions.iter().map(|x| x.id).collect::<Vec<_>>();
-            }
-
-            if let Some(pinned) = self.pinned {
-                message.pinned = pinned;
-            }
-
-            if let Some(timestamp) = self.timestamp {
-                message.timestamp = timestamp;
-            }
-
-            if let Some(tts) = self.tts {
-                message.tts = tts;
-            }
+            message.update_with_message_update(self);
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{InMemoryCache, ResourceType};
+    use crate::{DefaultInMemoryCache, ResourceType};
     use twilight_model::{
         channel::message::{Message, MessageFlags, MessageType},
         gateway::payload::incoming::MessageCreate,
@@ -143,7 +301,7 @@ mod tests {
     #[test]
     fn message_create() -> Result<(), ImageHashParseError> {
         let joined_at = Timestamp::from_secs(1_632_072_645).expect("non zero");
-        let cache = InMemoryCache::builder()
+        let cache = DefaultInMemoryCache::builder()
             .resource_types(ResourceType::MESSAGE | ResourceType::MEMBER | ResourceType::USER)
             .message_cache_size(2)
             .build();

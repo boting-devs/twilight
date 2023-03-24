@@ -120,7 +120,7 @@ bot's token. You must also depend on `futures`, `tokio`,
 
 ```rust,no_run
 use std::{env, error::Error, sync::Arc};
-use twilight_cache_inmemory::{InMemoryCache, ResourceType};
+use twilight_cache_inmemory::{DefaultInMemoryCache, ResourceType};
 use twilight_gateway::{Event, Shard, ShardId};
 use twilight_http::Client as HttpClient;
 use twilight_model::gateway::Intents;
@@ -144,7 +144,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Since we only care about new messages, make the cache only
     // cache new messages.
-    let cache = InMemoryCache::builder()
+    let cache = DefaultInMemoryCache::builder()
         .resource_types(ResourceType::MESSAGE)
         .build();
 
