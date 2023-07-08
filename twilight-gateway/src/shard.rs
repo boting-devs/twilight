@@ -653,7 +653,7 @@ impl Shard {
                             break Message::Text(decompressed);
                         };
                     }
-                    if let Some(message) = Message::from_websocket_msg(message) {
+                    if let Some(message) = Message::from_websocket_msg(&message) {
                         break message;
                     }
                 }

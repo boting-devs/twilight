@@ -26,7 +26,7 @@ pub enum Message {
 impl Message {
     /// Convert a `tokio-websockets` websocket message into a `twilight` websocket
     /// message.
-    pub(crate) fn from_websocket_msg(msg: WebsocketMessage) -> Option<Self> {
+    pub(crate) fn from_websocket_msg(msg: &WebsocketMessage) -> Option<Self> {
         if msg.is_close() {
             let (code, reason) = msg.as_close().unwrap();
 
