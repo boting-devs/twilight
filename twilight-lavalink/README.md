@@ -51,6 +51,16 @@ which uses [`rustls`] as the TLS backend and [`webpki-roots`] for root certifica
 
 This should be preferred over `rustls-native-roots` in Docker containers based on `scratch`.
 
+#### `no-tls`
+
+The `no-tls` feature disables TLS support and can save dependencies when the server does not
+have any kind of TLS set up.
+
+### `websocket-simd`
+
+The `websocket-simd` feature enables SIMD-accelerated websocket frame masking in
+[`tokio-websockets`].
+
 ## Examples
 
 Create a [client], add a [node], and give events to the client to [process]
