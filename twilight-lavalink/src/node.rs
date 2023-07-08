@@ -21,7 +21,11 @@ use crate::{
     model::{IncomingEvent, Opcode, OutgoingEvent, PlayerUpdate, Stats, StatsCpu, StatsMemory},
     player::PlayerManager,
 };
-use futures_util::{lock::BiLock, sink::SinkExt, stream::Stream};
+use futures_util::{
+    lock::BiLock,
+    sink::SinkExt,
+    stream::{Stream, StreamExt},
+};
 use http::header::{HeaderName, AUTHORIZATION};
 use std::{
     error::Error,

@@ -592,7 +592,7 @@ impl Shard {
         }
 
         let message = loop {
-            let mut next_action = |cx: &mut Context<'_>| {
+            let next_action = |cx: &mut Context<'_>| {
                 if !(self.status.is_disconnected() || self.status.is_fatally_closed()) {
                     if let Poll::Ready(frame) = self.user_channel.close_rx.poll_recv(cx) {
                         return Poll::Ready(Action::Close(frame.expect("shard owns channel")));
@@ -640,9 +640,7 @@ impl Shard {
                 Poll::Pending
             };
 
-            let action = poll_fn(&mut next_action).await;
-
-            match action {
+            match poll_fn(next_action).await {
                 Action::Message(Some(Ok(message))) => {
                     #[cfg(any(feature = "zlib-stock", feature = "zlib-simd"))]
                     if message.is_binary() {
