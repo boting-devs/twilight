@@ -547,6 +547,10 @@ impl Connection {
 
         let text = if incoming.is_text() {
             incoming.as_text().expect("message is text")
+        } else if incoming.is_close() {
+            tracing::debug!("got close, closing connection");
+
+            return Ok(false);
         } else {
             tracing::debug!("got ping, pong, close or binary payload: {incoming:?}");
 
