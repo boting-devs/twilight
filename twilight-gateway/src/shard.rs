@@ -69,7 +69,7 @@ use crate::{
     session::Session,
     Config, Message, ShardId,
 };
-use futures_util::{SinkExt, StreamExt};
+use futures_util::{FutureExt, SinkExt, StreamExt};
 use serde::{de::DeserializeOwned, Deserialize};
 #[cfg(any(
     feature = "native",
@@ -89,7 +89,7 @@ use tokio::{
     task::JoinHandle,
     time::{self, Duration, Instant, Interval, MissedTickBehavior},
 };
-use tokio_tungstenite::tungstenite::{Error as TungsteniteError, Message as TungsteniteMessage};
+use tokio_websockets::{Error as WebsocketError, Message as WebsocketMessage};
 use twilight_model::gateway::{
     event::{Event, GatewayEventDeserializer},
     payload::{
@@ -569,7 +569,7 @@ impl Shard {
             /// Identify with the gateway.
             Identify,
             /// Handle this incoming gateway message.
-            Message(Option<Result<TungsteniteMessage, TungsteniteError>>),
+            Message(Option<Result<WebsocketMessage, WebsocketError>>),
         }
 
         match self.status {
@@ -627,8 +627,12 @@ impl Shard {
                     }
                 }
 
-                if let Poll::Ready(message) =
-                    Pin::new(&mut self.connection.as_mut().expect("connected").next()).poll(cx)
+                if let Poll::Ready(message) = self
+                    .connection
+                    .as_mut()
+                    .expect("connected")
+                    .next()
+                    .poll_unpin(cx)
                 {
                     return Poll::Ready(Action::Message(message));
                 }
@@ -639,17 +643,17 @@ impl Shard {
             match poll_fn(next_action).await {
                 Action::Message(Some(Ok(message))) => {
                     #[cfg(any(feature = "zlib-stock", feature = "zlib-simd"))]
-                    if let TungsteniteMessage::Binary(bytes) = &message {
+                    if message.is_binary() {
                         if let Some(decompressed) = self
                             .inflater
-                            .inflate(bytes)
+                            .inflate(message.as_data())
                             .map_err(ReceiveMessageError::from_compression)?
                         {
                             tracing::trace!(%decompressed);
                             break Message::Text(decompressed);
                         };
                     }
-                    if let Some(message) = Message::from_tungstenite(message) {
+                    if let Some(message) = Message::from_websocket_msg(&message) {
                         break message;
                     }
                 }
@@ -663,7 +667,7 @@ impl Shard {
                     feature = "rustls-native-roots",
                     feature = "rustls-webpki-roots"
                 ))]
-                Action::Message(Some(Err(TungsteniteError::Io(e))))
+                Action::Message(Some(Err(WebsocketError::Io(e))))
                     if e.kind() == IoErrorKind::UnexpectedEof
                         // Assert we're directly connected to Discord's gateway.
                         && self.config.proxy_url().is_none()
@@ -773,13 +777,11 @@ impl Shard {
 
         match &message {
             Message::Close(frame) => {
-                // Tungstenite automatically replies to the close message.
+                // tokio-websockets automatically replies to the close message.
                 tracing::debug!(?frame, "received websocket close message");
                 // Don't run `disconnect` if we initiated the close.
                 if !self.status.is_disconnected() {
-                    self.disconnect(CloseInitiator::Gateway(
-                        frame.as_ref().map(|frame| frame.code),
-                    ));
+                    self.disconnect(CloseInitiator::Gateway(frame.as_ref().map(|f| f.code)));
                 }
             }
             Message::Text(event) => {
@@ -884,7 +886,7 @@ impl Shard {
                 kind: SendErrorType::Sending,
                 source: None,
             })?
-            .send(message.into_tungstenite())
+            .send(message.into_websocket_msg())
             .await
             .map_err(|source| SendError {
                 kind: SendErrorType::Sending,
@@ -1105,7 +1107,7 @@ impl Shard {
                 let heartbeat_interval = Duration::from_millis(event.data.heartbeat_interval);
                 // First heartbeat should have some jitter, see
                 // https://discord.com/developers/docs/topics/gateway#heartbeat-interval
-                let jitter = heartbeat_interval.mul_f64(rand::random());
+                let jitter = heartbeat_interval.mul_f64(fastrand::f64());
                 tracing::debug!(?heartbeat_interval, ?jitter, "received hello");
 
                 if self.config().ratelimit_messages() {
