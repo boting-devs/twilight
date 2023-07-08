@@ -552,7 +552,7 @@ impl Connection {
 
             return Ok(false);
         } else {
-            tracing::debug!("got ping, pong, close or binary payload: {incoming:?}");
+            tracing::debug!("got ping, pong or binary payload: {incoming:?}");
 
             return Ok(true);
         };
