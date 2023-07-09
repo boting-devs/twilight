@@ -5,16 +5,6 @@ use twilight_model::{
 };
 
 impl InMemoryCache {
-    pub(crate) fn cache_presences(
-        &self,
-        guild_id: Id<GuildMarker>,
-        presences: impl IntoIterator<Item = CachedPresence>,
-    ) {
-        for presence in presences {
-            self.cache_presence(guild_id, presence);
-        }
-    }
-
     fn cache_presence(&self, guild_id: Id<GuildMarker>, presence: CachedPresence) {
         self.guild_presences
             .entry(guild_id)

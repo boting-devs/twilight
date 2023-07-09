@@ -1,6 +1,6 @@
 use crate::{
     config::ResourceType,
-    model::{CachedGuild, CachedPresence},
+    model::{CachedGuild},
     InMemoryCache, UpdateCache,
 };
 use dashmap::DashMap;
@@ -15,55 +15,17 @@ impl InMemoryCache {
     #[allow(clippy::too_many_lines)]
     fn cache_guild(&self, guild: Guild) {
         let Guild {
-            afk_channel_id,
-            afk_timeout,
-            application_id,
-            approximate_member_count: _,
-            approximate_presence_count: _,
-            banner,
             channels,
-            default_message_notifications,
-            description,
-            discovery_splash,
-            emojis,
-            explicit_content_filter,
-            features,
-            icon,
             id,
-            joined_at,
-            large,
-            max_members,
-            max_presences,
-            max_video_channel_users,
             member_count,
             members,
-            mfa_level,
             name,
-            nsfw_level,
             owner_id,
-            owner,
             permissions,
-            preferred_locale,
-            premium_progress_bar_enabled,
-            premium_subscription_count,
-            premium_tier,
-            presences,
-            public_updates_channel_id,
             roles,
-            rules_channel_id,
-            safety_alerts_channel_id,
-            splash,
-            stage_instances,
-            stickers,
-            system_channel_flags,
-            system_channel_id,
             threads,
             unavailable,
-            vanity_url_code,
-            verification_level,
             voice_states,
-            widget_channel_id,
-            widget_enabled,
         } = guild;
 
         // The map and set creation needs to occur first, so caching states and
@@ -86,15 +48,8 @@ impl InMemoryCache {
             self.cache_channels(threads);
         }
 
-        if self.wants(ResourceType::EMOJI) {
-            self.guild_emojis.insert(id, HashSet::new());
-            self.cache_emojis(id, emojis);
-        }
 
-        if self.wants(ResourceType::MEMBER) {
-            self.guild_members.insert(id, HashSet::new());
-            self.cache_members(id, members);
-        } else if self.wants(ResourceType::MEMBER_CURRENT) {
+        if self.wants(ResourceType::MEMBER_CURRENT) {
             if let Some(current_user) = self.current_user() {
                 let current_member = members
                     .into_iter()
@@ -107,19 +62,10 @@ impl InMemoryCache {
             }
         }
 
-        if self.wants(ResourceType::PRESENCE) {
-            self.guild_presences.insert(id, HashSet::new());
-            self.cache_presences(id, presences.into_iter().map(CachedPresence::from));
-        }
 
         if self.wants(ResourceType::ROLE) {
             self.guild_roles.insert(id, HashSet::new());
             self.cache_roles(id, roles);
-        }
-
-        if self.wants(ResourceType::STICKER) {
-            self.guild_stage_instances.insert(id, HashSet::new());
-            self.cache_stickers(id, stickers);
         }
 
         if self.wants(ResourceType::VOICE_STATE) {
@@ -127,51 +73,14 @@ impl InMemoryCache {
             self.cache_voice_states(voice_states);
         }
 
-        if self.wants(ResourceType::STAGE_INSTANCE) {
-            self.guild_stage_instances.insert(id, HashSet::new());
-            self.cache_stage_instances(id, stage_instances);
-        }
-
         if self.wants(ResourceType::GUILD) {
             let guild = CachedGuild {
-                afk_channel_id,
-                afk_timeout,
-                application_id,
-                banner,
-                default_message_notifications,
-                description,
-                discovery_splash,
-                explicit_content_filter,
-                features,
-                icon,
                 id,
-                joined_at,
-                large,
-                max_members,
-                max_presences,
-                max_video_channel_users,
                 member_count,
-                mfa_level,
                 name,
-                nsfw_level,
                 owner_id,
-                owner,
                 permissions,
-                preferred_locale,
-                premium_progress_bar_enabled,
-                premium_subscription_count,
-                premium_tier,
-                public_updates_channel_id,
-                rules_channel_id,
-                safety_alerts_channel_id,
-                splash,
-                system_channel_id,
-                system_channel_flags,
                 unavailable,
-                vanity_url_code,
-                verification_level,
-                widget_channel_id,
-                widget_enabled,
             };
 
             self.unavailable_guilds.remove(&guild.id());
@@ -260,32 +169,9 @@ impl UpdateCache for GuildUpdate {
         }
 
         if let Some(mut guild) = cache.guilds.get_mut(&self.0.id) {
-            guild.afk_channel_id = self.0.afk_channel_id;
-            guild.afk_timeout = self.0.afk_timeout;
-            guild.banner = self.0.banner;
-            guild.default_message_notifications = self.0.default_message_notifications;
-            guild.description = self.0.description;
-            guild.features = self.0.features;
-            guild.icon = self.0.icon;
-            guild.max_members = self.0.max_members;
-            guild.max_presences = Some(self.0.max_presences.unwrap_or(25000));
-            guild.mfa_level = self.0.mfa_level;
             guild.name = self.0.name;
-            guild.nsfw_level = self.0.nsfw_level;
-            guild.owner = self.0.owner;
             guild.owner_id = self.0.owner_id;
             guild.permissions = self.0.permissions;
-            guild.preferred_locale = self.0.preferred_locale;
-            guild.premium_tier = self.0.premium_tier;
-            guild
-                .premium_subscription_count
-                .replace(self.0.premium_subscription_count.unwrap_or_default());
-            guild.splash = self.0.splash;
-            guild.system_channel_id = self.0.system_channel_id;
-            guild.verification_level = self.0.verification_level;
-            guild.vanity_url_code = self.0.vanity_url_code;
-            guild.widget_channel_id = self.0.widget_channel_id;
-            guild.widget_enabled = self.0.widget_enabled;
         };
     }
 }
@@ -303,9 +189,7 @@ mod tests {
             GuildCreate, GuildUpdate, MemberAdd, MemberRemove, UnavailableGuild,
         },
         guild::{
-            AfkTimeout, DefaultMessageNotificationLevel, ExplicitContentFilter, Guild, MfaLevel,
-            NSFWLevel, PartialGuild, Permissions, PremiumTier, SystemChannelFlags,
-            VerificationLevel,
+            Guild,  PartialGuild, Permissions,
         },
         id::Id,
         util::datetime::{Timestamp, TimestampParseError},
@@ -409,55 +293,17 @@ mod tests {
         }]);
 
         let guild = Guild {
-            afk_channel_id: None,
-            afk_timeout: AfkTimeout::FIFTEEN_MINUTES,
-            application_id: None,
-            approximate_member_count: None,
-            approximate_presence_count: None,
-            banner: None,
             channels,
-            default_message_notifications: DefaultMessageNotificationLevel::Mentions,
-            description: None,
-            discovery_splash: None,
-            emojis: Vec::new(),
-            explicit_content_filter: ExplicitContentFilter::AllMembers,
-            features: vec![],
-            icon: None,
             id: Id::new(123),
-            joined_at: Some(Timestamp::from_secs(1_632_072_645).expect("non zero")),
-            large: false,
-            max_members: Some(50),
-            max_presences: Some(100),
-            max_video_channel_users: None,
             member_count: Some(25),
             members: Vec::new(),
-            mfa_level: MfaLevel::Elevated,
             name: "this is a guild".to_owned(),
-            nsfw_level: NSFWLevel::AgeRestricted,
             owner_id: Id::new(456),
-            owner: Some(false),
             permissions: Some(Permissions::SEND_MESSAGES),
-            preferred_locale: "en-GB".to_owned(),
-            premium_progress_bar_enabled: true,
-            premium_subscription_count: Some(0),
-            premium_tier: PremiumTier::None,
-            presences: Vec::new(),
-            public_updates_channel_id: None,
             roles: Vec::new(),
-            rules_channel_id: None,
-            safety_alerts_channel_id: Some(Id::new(789)),
-            splash: None,
-            stage_instances: Vec::new(),
-            stickers: Vec::new(),
-            system_channel_flags: SystemChannelFlags::SUPPRESS_JOIN_NOTIFICATIONS,
-            system_channel_id: None,
             threads,
             unavailable: false,
-            vanity_url_code: None,
-            verification_level: VerificationLevel::VeryHigh,
             voice_states: Vec::new(),
-            widget_channel_id: None,
-            widget_enabled: None,
         };
 
         let cache = InMemoryCache::new();
@@ -486,40 +332,11 @@ mod tests {
 
         let mutation = PartialGuild {
             id: guild.id,
-            afk_channel_id: guild.afk_channel_id,
-            afk_timeout: guild.afk_timeout,
-            application_id: guild.application_id,
-            banner: guild.banner,
-            default_message_notifications: guild.default_message_notifications,
-            description: guild.description,
-            discovery_splash: guild.discovery_splash,
-            emojis: guild.emojis,
-            explicit_content_filter: guild.explicit_content_filter,
-            features: guild.features,
-            icon: guild.icon,
-            max_members: guild.max_members,
-            max_presences: guild.max_presences,
             member_count: guild.member_count,
-            mfa_level: guild.mfa_level,
             name: "test2222".to_owned(),
-            nsfw_level: guild.nsfw_level,
             owner_id: Id::new(2),
-            owner: guild.owner,
             permissions: guild.permissions,
-            preferred_locale: guild.preferred_locale,
-            premium_progress_bar_enabled: guild.premium_progress_bar_enabled,
-            premium_subscription_count: guild.premium_subscription_count,
-            premium_tier: guild.premium_tier,
-            public_updates_channel_id: None,
             roles: guild.roles,
-            rules_channel_id: guild.rules_channel_id,
-            splash: guild.splash,
-            system_channel_flags: guild.system_channel_flags,
-            system_channel_id: guild.system_channel_id,
-            verification_level: guild.verification_level,
-            vanity_url_code: guild.vanity_url_code,
-            widget_channel_id: guild.widget_channel_id,
-            widget_enabled: guild.widget_enabled,
         };
 
         cache.update(GuildUpdate(mutation.clone()));

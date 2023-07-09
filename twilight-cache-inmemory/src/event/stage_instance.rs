@@ -9,16 +9,6 @@ use twilight_model::{
 };
 
 impl InMemoryCache {
-    pub(crate) fn cache_stage_instances(
-        &self,
-        guild_id: Id<GuildMarker>,
-        stage_instances: impl IntoIterator<Item = StageInstance>,
-    ) {
-        for stage_instance in stage_instances {
-            self.cache_stage_instance(guild_id, stage_instance);
-        }
-    }
-
     fn cache_stage_instance(&self, guild_id: Id<GuildMarker>, stage_instance: StageInstance) {
         self.guild_stage_instances
             .entry(guild_id)

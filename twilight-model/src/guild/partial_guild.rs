@@ -1,76 +1,35 @@
 use super::{
-    AfkTimeout, DefaultMessageNotificationLevel, Emoji, ExplicitContentFilter, GuildFeature,
-    MfaLevel, NSFWLevel, Permissions, PremiumTier, Role, SystemChannelFlags, VerificationLevel,
+    Permissions, Role
 };
 use crate::{
     id::{
-        marker::{ApplicationMarker, ChannelMarker, GuildMarker, UserMarker},
+        marker::{GuildMarker, UserMarker},
         Id,
     },
-    util::image_hash::ImageHash,
 };
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct PartialGuild {
-    pub afk_channel_id: Option<Id<ChannelMarker>>,
-    pub afk_timeout: AfkTimeout,
-    pub application_id: Option<Id<ApplicationMarker>>,
-    pub banner: Option<ImageHash>,
-    pub default_message_notifications: DefaultMessageNotificationLevel,
-    pub description: Option<String>,
-    pub discovery_splash: Option<ImageHash>,
-    pub emojis: Vec<Emoji>,
-    pub explicit_content_filter: ExplicitContentFilter,
-    pub features: Vec<GuildFeature>,
-    pub icon: Option<ImageHash>,
     pub id: Id<GuildMarker>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_members: Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_presences: Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub member_count: Option<u64>,
-    pub mfa_level: MfaLevel,
     pub name: String,
-    pub nsfw_level: NSFWLevel,
     pub owner_id: Id<UserMarker>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub owner: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub permissions: Option<Permissions>,
-    pub preferred_locale: String,
-    /// Whether the premium progress bar is enabled in the guild.
-    pub premium_progress_bar_enabled: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub premium_subscription_count: Option<u64>,
-    pub premium_tier: PremiumTier,
-    /// ID of the where moderators of Community guilds receive notices from
-    /// Discord.
-    pub public_updates_channel_id: Option<Id<ChannelMarker>>,
     pub roles: Vec<Role>,
-    pub rules_channel_id: Option<Id<ChannelMarker>>,
-    pub splash: Option<ImageHash>,
-    pub system_channel_flags: SystemChannelFlags,
-    pub system_channel_id: Option<Id<ChannelMarker>>,
-    pub verification_level: VerificationLevel,
-    pub vanity_url_code: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub widget_channel_id: Option<Id<ChannelMarker>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub widget_enabled: Option<bool>,
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{
-        guild::{AfkTimeout, GuildFeature},
         test::image_hash,
     };
 
     use super::{
-        DefaultMessageNotificationLevel, ExplicitContentFilter, MfaLevel, NSFWLevel, PartialGuild,
-        Permissions, PremiumTier, SystemChannelFlags, VerificationLevel,
+        PartialGuild,
+        Permissions,
     };
     use crate::id::Id;
     use serde_test::Token;
@@ -79,41 +38,12 @@ mod tests {
     #[test]
     fn partial_guild() {
         let value = PartialGuild {
-            afk_channel_id: Some(Id::new(2)),
-            afk_timeout: AfkTimeout::FIFTEEN_MINUTES,
-            application_id: Some(Id::new(3)),
-            banner: Some(image_hash::BANNER),
-            default_message_notifications: DefaultMessageNotificationLevel::Mentions,
-            description: Some("a description".to_owned()),
-            discovery_splash: Some(image_hash::SPLASH),
-            emojis: Vec::new(),
-            explicit_content_filter: ExplicitContentFilter::MembersWithoutRole,
-            features: Vec::from([GuildFeature::AnimatedBanner]),
-            icon: Some(image_hash::ICON),
             id: Id::new(1),
-            max_members: Some(25_000),
-            max_presences: Some(10_000),
             member_count: Some(12_000),
-            mfa_level: MfaLevel::Elevated,
             name: "the name".to_owned(),
-            nsfw_level: NSFWLevel::Default,
             owner_id: Id::new(5),
-            owner: Some(false),
             permissions: Some(Permissions::SEND_MESSAGES),
-            preferred_locale: "en-us".to_owned(),
-            premium_progress_bar_enabled: true,
-            premium_subscription_count: Some(3),
-            premium_tier: PremiumTier::Tier1,
-            public_updates_channel_id: None,
             roles: Vec::new(),
-            rules_channel_id: Some(Id::new(6)),
-            splash: Some(image_hash::SPLASH),
-            system_channel_flags: SystemChannelFlags::SUPPRESS_PREMIUM_SUBSCRIPTIONS,
-            system_channel_id: Some(Id::new(7)),
-            verification_level: VerificationLevel::Medium,
-            vanity_url_code: Some("twilight".to_owned()),
-            widget_channel_id: Some(Id::new(8)),
-            widget_enabled: Some(true),
         };
 
         serde_test::assert_tokens(
