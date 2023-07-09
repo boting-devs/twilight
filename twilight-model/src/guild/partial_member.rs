@@ -1,33 +1,13 @@
 use crate::{
-    guild::Permissions,
     id::{marker::RoleMarker, Id},
     user::User,
-    util::{ImageHash, Timestamp},
+    util::Timestamp,
 };
 use serde::{Deserialize, Serialize};
 
-use super::MemberFlags;
-
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct PartialMember {
-    /// Member's guild avatar.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub avatar: Option<ImageHash>,
     pub communication_disabled_until: Option<Timestamp>,
-    pub deaf: bool,
-    pub flags: MemberFlags,
-    pub joined_at: Timestamp,
-    pub mute: bool,
-    pub nick: Option<String>,
-    /// Permission data for the member.
-    ///
-    /// Sent in an [`Interaction`].
-    ///
-    /// [`Interaction`]: crate::application::interaction::Interaction
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub permissions: Option<Permissions>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub premium_since: Option<Timestamp>,
     pub roles: Vec<Id<RoleMarker>>,
     pub user: Option<User>,
 }

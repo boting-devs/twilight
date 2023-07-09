@@ -1,46 +1,33 @@
 use serde::Serialize;
 use twilight_model::{
     application::interaction::application_command::InteractionMember,
-    guild::{Member, MemberFlags, PartialMember},
+    guild::{Member, PartialMember},
     id::{
         marker::{RoleMarker, UserMarker},
         Id,
     },
-    util::{ImageHash, Timestamp},
+    util::Timestamp,
 };
 
 /// Computed fields required to complete a full cached member via
-/// [`CachedMember::from_interaction_member`] that are not otherwise present.
-pub(crate) struct ComputedInteractionMemberFields {
-    pub avatar: Option<ImageHash>,
-    pub deaf: Option<bool>,
-    pub mute: Option<bool>,
-}
+// /// [`CachedMember::from_interaction_member`] that are not otherwise present.
+// pub(crate) struct ComputedInteractionMemberFields {
+//     pub avatar: Option<ImageHash>,
+//     pub deaf: Option<bool>,
+//     pub mute: Option<bool>,
+// }
 
 /// Represents a cached [`Member`].
 ///
 /// [`Member`]: twilight_model::guild::Member
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CachedMember {
-    pub(crate) avatar: Option<ImageHash>,
     pub(crate) communication_disabled_until: Option<Timestamp>,
-    pub(crate) deaf: Option<bool>,
-    pub(crate) flags: MemberFlags,
-    pub(crate) joined_at: Timestamp,
-    pub(crate) mute: Option<bool>,
-    pub(crate) nick: Option<String>,
-    pub(crate) pending: bool,
-    pub(crate) premium_since: Option<Timestamp>,
     pub(crate) roles: Vec<Id<RoleMarker>>,
     pub(crate) user_id: Id<UserMarker>,
 }
 
 impl CachedMember {
-    /// Member's guild avatar.
-    pub const fn avatar(&self) -> Option<ImageHash> {
-        self.avatar
-    }
-
     /// When the user can resume communication in a guild again.
     ///
     /// Checking if this value is [`Some`] is not enough to know if a used is currently
@@ -51,44 +38,6 @@ impl CachedMember {
     /// [discord-api-docs#4269]: https://github.com/discord/discord-api-docs/issues/4269
     pub const fn communication_disabled_until(&self) -> Option<Timestamp> {
         self.communication_disabled_until
-    }
-
-    /// Whether the member is deafened in a voice channel.
-    pub const fn deaf(&self) -> Option<bool> {
-        self.deaf
-    }
-
-    /// Flags for the member.
-    ///
-    /// Defaults to an empty bitfield.
-    pub const fn flags(&self) -> MemberFlags {
-        self.flags
-    }
-
-    /// [`Timestamp`] of this member's join date.
-    pub const fn joined_at(&self) -> Timestamp {
-        self.joined_at
-    }
-
-    /// Whether the member is muted in a voice channel.
-    pub const fn mute(&self) -> Option<bool> {
-        self.mute
-    }
-
-    /// Nickname of the member.
-    pub fn nick(&self) -> Option<&str> {
-        self.nick.as_deref()
-    }
-
-    /// Whether the member has not yet passed the guild's Membership Screening
-    /// requirements.
-    pub const fn pending(&self) -> bool {
-        self.pending
-    }
-
-    /// [`Timestamp`] of the date the member boosted the guild.
-    pub const fn premium_since(&self) -> Option<Timestamp> {
-        self.premium_since
     }
 
     /// List of role IDs this member has.
@@ -105,29 +54,13 @@ impl CachedMember {
     #[allow(clippy::missing_const_for_fn)]
     pub(crate) fn from_model(member: Member) -> Self {
         let Member {
-            avatar,
             communication_disabled_until,
-            deaf,
-            flags,
-            joined_at,
-            mute,
-            nick,
-            pending,
-            premium_since,
             roles,
             user,
         } = member;
 
         Self {
-            avatar,
             communication_disabled_until,
-            deaf: Some(deaf),
-            flags,
-            joined_at,
-            mute: Some(mute),
-            nick,
-            pending,
-            premium_since,
             roles,
             user_id: user.id,
         }
@@ -139,31 +72,14 @@ impl CachedMember {
     pub(crate) fn from_interaction_member(
         user_id: Id<UserMarker>,
         member: InteractionMember,
-        fields: ComputedInteractionMemberFields,
     ) -> Self {
         let InteractionMember {
-            avatar: _,
             communication_disabled_until,
-            flags,
-            joined_at,
-            nick,
-            pending,
-            permissions: _,
-            premium_since,
             roles,
         } = member;
-        let ComputedInteractionMemberFields { avatar, deaf, mute } = fields;
 
         Self {
-            avatar,
             communication_disabled_until,
-            deaf,
-            flags,
-            joined_at,
-            mute,
-            nick,
-            pending,
-            premium_since,
             roles,
             user_id,
         }
@@ -171,29 +87,13 @@ impl CachedMember {
 
     pub(crate) fn from_partial_member(user_id: Id<UserMarker>, member: PartialMember) -> Self {
         let PartialMember {
-            avatar,
             communication_disabled_until,
-            deaf,
-            flags,
-            joined_at,
-            mute,
-            nick,
-            permissions: _,
-            premium_since,
             roles,
             user,
         } = member;
 
         Self {
-            avatar,
             communication_disabled_until,
-            deaf: Some(deaf),
-            flags,
-            joined_at,
-            mute: Some(mute),
-            nick,
-            pending: false,
-            premium_since,
             roles,
             user_id: user.map_or(user_id, |user| user.id),
         }
@@ -202,14 +102,7 @@ impl CachedMember {
 
 impl PartialEq<Member> for CachedMember {
     fn eq(&self, other: &Member) -> bool {
-        self.avatar == other.avatar
-            && self.communication_disabled_until == other.communication_disabled_until
-            && self.deaf == Some(other.deaf)
-            && self.joined_at == other.joined_at
-            && self.mute == Some(other.mute)
-            && self.nick == other.nick
-            && self.pending == other.pending
-            && self.premium_since == other.premium_since
+        self.communication_disabled_until == other.communication_disabled_until
             && self.roles == other.roles
             && self.user_id == other.user.id
     }
@@ -218,21 +111,13 @@ impl PartialEq<Member> for CachedMember {
 impl PartialEq<PartialMember> for CachedMember {
     fn eq(&self, other: &PartialMember) -> bool {
         self.communication_disabled_until == other.communication_disabled_until
-            && self.deaf == Some(other.deaf)
-            && self.joined_at == other.joined_at
-            && self.mute == Some(other.mute)
-            && self.nick == other.nick
-            && self.premium_since == other.premium_since
             && self.roles == other.roles
     }
 }
 
 impl PartialEq<InteractionMember> for CachedMember {
     fn eq(&self, other: &InteractionMember) -> bool {
-        self.joined_at == other.joined_at
-            && self.nick == other.nick
-            && self.premium_since == other.premium_since
-            && self.roles == other.roles
+        self.roles == other.roles
     }
 }
 

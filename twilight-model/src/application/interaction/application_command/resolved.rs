@@ -1,12 +1,12 @@
 use crate::{
     channel::{thread::ThreadMetadata, Attachment, ChannelType, Message},
-    guild::{MemberFlags, Permissions, Role},
+    guild::{Permissions, Role},
     id::{
         marker::{AttachmentMarker, ChannelMarker, MessageMarker, RoleMarker, UserMarker},
         Id,
     },
     user::User,
-    util::{ImageHash, Timestamp},
+    util::Timestamp,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::hash_map::HashMap;
@@ -70,26 +70,8 @@ pub struct InteractionChannel {
 /// [`Interaction`]: crate::application::interaction::Interaction
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct InteractionMember {
-    /// Member's guild avatar.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub avatar: Option<ImageHash>,
     /// If the member is timed out, when the timeout will expire.
     pub communication_disabled_until: Option<Timestamp>,
-    /// Flags for the member.
-    ///
-    /// Defaults to an empty bitfield.
-    pub flags: MemberFlags,
-    /// Member guild join date.
-    pub joined_at: Timestamp,
-    /// Member nickname.
-    pub nick: Option<String>,
-    /// Whether the user has yet to pass the guild's Membership Screening
-    /// requirements.
-    pub pending: bool,
-    /// Total permissions of the member in this channel including overwrites
-    pub permissions: Permissions,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub premium_since: Option<Timestamp>,
     /// Member roles.
     #[serde(default)]
     pub roles: Vec<Id<RoleMarker>>,

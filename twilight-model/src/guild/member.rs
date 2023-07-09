@@ -1,10 +1,9 @@
 //! Mostly internal custom serde deserializers.
 
-use super::MemberFlags;
 use crate::{
     id::{marker::RoleMarker, Id},
     user::User,
-    util::{ImageHash, Timestamp},
+    util::Timestamp,
 };
 
 use serde::{Deserialize, Serialize};
@@ -14,24 +13,7 @@ use serde::{Deserialize, Serialize};
 /// [`Guild`]: super::Guild
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Member {
-    /// Member's guild avatar.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub avatar: Option<ImageHash>,
     pub communication_disabled_until: Option<Timestamp>,
-    pub deaf: bool,
-    /// Flags for the member.
-    ///
-    /// Defaults to an empty bitfield.
-    pub flags: MemberFlags,
-    pub joined_at: Timestamp,
-    pub mute: bool,
-    pub nick: Option<String>,
-    /// Whether the user has yet to pass the guild's [Membership Screening]
-    /// requirements.
-    #[serde(default)]
-    pub pending: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub premium_since: Option<Timestamp>,
     pub roles: Vec<Id<RoleMarker>>,
     pub user: User,
 }
