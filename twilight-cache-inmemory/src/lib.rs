@@ -853,10 +853,9 @@ impl UpdateCache for Event {
     #[allow(clippy::cognitive_complexity, clippy::explicit_deref_methods)]
     fn update(self, c: &InMemoryCache) {
         match self {
-            Event::ChannelCreate(v) => c.update(*v),
-            Event::ChannelDelete(v) => c.update(*v),
-            Event::ChannelPinsUpdate(v) => c.update(v),
-            Event::ChannelUpdate(v) => c.update(*v),
+            Event::ChannelCreate(v) => c.update(v),
+            Event::ChannelDelete(v) => c.update(v),
+            Event::ChannelUpdate(v) => c.update(v),
             Event::GuildCreate(v) => c.update(*v),
             Event::GuildDelete(v) => c.update(v),
             Event::GuildEmojisUpdate(v) => c.update(v),
@@ -886,8 +885,8 @@ impl UpdateCache for Event {
             Event::StageInstanceCreate(v) => c.update(v),
             Event::StageInstanceDelete(v) => c.update(v),
             Event::StageInstanceUpdate(v) => c.update(v),
-            Event::ThreadCreate(v) => c.update(*v),
-            Event::ThreadUpdate(v) => c.update(*v),
+            Event::ThreadCreate(v) => c.update(v),
+            Event::ThreadUpdate(v) => c.update(v),
             Event::ThreadDelete(v) => c.update(v),
             Event::ThreadListSync(v) => c.update(v),
             Event::UnavailableGuild(v) => c.update(v),
@@ -900,6 +899,7 @@ impl UpdateCache for Event {
             | Event::AutoModerationRuleUpdate(_)
             | Event::BanAdd(_)
             | Event::BanRemove(_)
+            | Event::ChannelPinsUpdate(_)
             | Event::CommandPermissionsUpdate(_)
             | Event::GatewayClose(_)
             | Event::GatewayHeartbeat(_)

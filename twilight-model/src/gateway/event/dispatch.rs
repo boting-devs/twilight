@@ -20,10 +20,10 @@ pub enum DispatchEvent {
     AutoModerationRuleUpdate(Box<AutoModerationRuleUpdate>),
     BanAdd(BanAdd),
     BanRemove(BanRemove),
-    ChannelCreate(Box<ChannelCreate>),
-    ChannelDelete(Box<ChannelDelete>),
+    ChannelCreate(ChannelCreate),
+    ChannelDelete(ChannelDelete),
     ChannelPinsUpdate(ChannelPinsUpdate),
-    ChannelUpdate(Box<ChannelUpdate>),
+    ChannelUpdate(ChannelUpdate),
     CommandPermissionsUpdate(CommandPermissionsUpdate),
     GiftCodeUpdate,
     GuildAuditLogEntryCreate(Box<GuildAuditLogEntryCreate>),
@@ -66,12 +66,12 @@ pub enum DispatchEvent {
     StageInstanceCreate(StageInstanceCreate),
     StageInstanceDelete(StageInstanceDelete),
     StageInstanceUpdate(StageInstanceUpdate),
-    ThreadCreate(Box<ThreadCreate>),
+    ThreadCreate(ThreadCreate),
     ThreadDelete(ThreadDelete),
     ThreadListSync(ThreadListSync),
     ThreadMemberUpdate(Box<ThreadMemberUpdate>),
     ThreadMembersUpdate(ThreadMembersUpdate),
-    ThreadUpdate(Box<ThreadUpdate>),
+    ThreadUpdate(ThreadUpdate),
     TypingStart(Box<TypingStart>),
     UnavailableGuild(UnavailableGuild),
     UserUpdate(UserUpdate),
@@ -258,16 +258,16 @@ impl<'de, 'a> DeserializeSeed<'de> for DispatchEventWithTypeDeserializer<'a> {
                 AutoModerationRuleUpdate::deserialize(deserializer)?,
             )),
             "CHANNEL_CREATE" => {
-                DispatchEvent::ChannelCreate(Box::new(ChannelCreate::deserialize(deserializer)?))
+                DispatchEvent::ChannelCreate(ChannelCreate::deserialize(deserializer)?)
             }
             "CHANNEL_DELETE" => {
-                DispatchEvent::ChannelDelete(Box::new(ChannelDelete::deserialize(deserializer)?))
+                DispatchEvent::ChannelDelete(ChannelDelete::deserialize(deserializer)?)
             }
             "CHANNEL_PINS_UPDATE" => {
                 DispatchEvent::ChannelPinsUpdate(ChannelPinsUpdate::deserialize(deserializer)?)
             }
             "CHANNEL_UPDATE" => {
-                DispatchEvent::ChannelUpdate(Box::new(ChannelUpdate::deserialize(deserializer)?))
+                DispatchEvent::ChannelUpdate(ChannelUpdate::deserialize(deserializer)?)
             }
             "APPLICATION_COMMAND_PERMISSIONS_UPDATE" => DispatchEvent::CommandPermissionsUpdate(
                 CommandPermissionsUpdate::deserialize(deserializer)?,
@@ -331,9 +331,7 @@ impl<'de, 'a> DeserializeSeed<'de> for DispatchEventWithTypeDeserializer<'a> {
             "GUILD_STICKERS_UPDATE" => {
                 DispatchEvent::GuildStickersUpdate(GuildStickersUpdate::deserialize(deserializer)?)
             }
-            "GUILD_UPDATE" => {
-                DispatchEvent::GuildUpdate(GuildUpdate::deserialize(deserializer)?)
-            }
+            "GUILD_UPDATE" => DispatchEvent::GuildUpdate(GuildUpdate::deserialize(deserializer)?),
             "INTEGRATION_CREATE" => DispatchEvent::IntegrationCreate(Box::new(
                 IntegrationCreate::deserialize(deserializer)?,
             )),
@@ -400,7 +398,7 @@ impl<'de, 'a> DeserializeSeed<'de> for DispatchEventWithTypeDeserializer<'a> {
                 DispatchEvent::StageInstanceUpdate(StageInstanceUpdate::deserialize(deserializer)?)
             }
             "THREAD_CREATE" => {
-                DispatchEvent::ThreadCreate(Box::new(ThreadCreate::deserialize(deserializer)?))
+                DispatchEvent::ThreadCreate(ThreadCreate::deserialize(deserializer)?)
             }
             "THREAD_DELETE" => {
                 DispatchEvent::ThreadDelete(ThreadDelete::deserialize(deserializer)?)
@@ -415,7 +413,7 @@ impl<'de, 'a> DeserializeSeed<'de> for DispatchEventWithTypeDeserializer<'a> {
                 DispatchEvent::ThreadMembersUpdate(ThreadMembersUpdate::deserialize(deserializer)?)
             }
             "THREAD_UPDATE" => {
-                DispatchEvent::ThreadUpdate(Box::new(ThreadUpdate::deserialize(deserializer)?))
+                DispatchEvent::ThreadUpdate(ThreadUpdate::deserialize(deserializer)?)
             }
             "TYPING_START" => {
                 DispatchEvent::TypingStart(Box::new(TypingStart::deserialize(deserializer)?))

@@ -1,8 +1,4 @@
-use crate::{
-    config::ResourceType,
-    model::{CachedGuild},
-    InMemoryCache, UpdateCache,
-};
+use crate::{config::ResourceType, model::CachedGuild, InMemoryCache, UpdateCache};
 use dashmap::DashMap;
 use std::{collections::HashSet, hash::Hash};
 use twilight_model::{
@@ -48,7 +44,6 @@ impl InMemoryCache {
             self.cache_channels(threads);
         }
 
-
         if self.wants(ResourceType::MEMBER_CURRENT) {
             if let Some(current_user) = self.current_user() {
                 let current_member = members
@@ -61,7 +56,6 @@ impl InMemoryCache {
                 }
             }
         }
-
 
         if self.wants(ResourceType::ROLE) {
             self.guild_roles.insert(id, HashSet::new());
@@ -179,117 +173,39 @@ impl UpdateCache for GuildUpdate {
 #[cfg(test)]
 mod tests {
     use crate::{test, InMemoryCache};
-    use std::str::FromStr;
     use twilight_model::{
-        channel::{
-            thread::{AutoArchiveDuration, ThreadMember, ThreadMetadata},
-            Channel, ChannelType,
-        },
+        channel::{Channel, ChannelType},
         gateway::payload::incoming::{
             GuildCreate, GuildUpdate, MemberAdd, MemberRemove, UnavailableGuild,
         },
-        guild::{
-            Guild,  PartialGuild, Permissions,
-        },
+        guild::{Guild, PartialGuild, Permissions},
         id::Id,
-        util::datetime::{Timestamp, TimestampParseError},
+        util::datetime::TimestampParseError,
     };
 
     #[allow(clippy::too_many_lines)]
     #[test]
     fn guild_create_channels_have_guild_ids() -> Result<(), TimestampParseError> {
-        const DATETIME: &str = "2021-09-19T14:17:32.000000+00:00";
-
-        let timestamp = Timestamp::from_str(DATETIME)?;
-
         let channels = Vec::from([Channel {
-            application_id: None,
-            applied_tags: None,
-            available_tags: None,
-            bitrate: None,
-            default_auto_archive_duration: None,
-            default_forum_layout: None,
-            default_reaction_emoji: None,
-            default_sort_order: None,
-            default_thread_rate_limit_per_user: None,
-            flags: None,
             guild_id: None,
-            icon: None,
             id: Id::new(111),
-            invitable: None,
             kind: ChannelType::GuildText,
-            last_message_id: None,
-            last_pin_timestamp: None,
-            managed: None,
-            member: None,
-            member_count: None,
-            message_count: None,
-            name: Some("guild channel with no guild id".to_owned()),
-            newly_created: None,
-            nsfw: Some(true),
-            owner_id: None,
             parent_id: None,
             permission_overwrites: Some(Vec::new()),
             position: Some(1),
-            rate_limit_per_user: None,
-            recipients: None,
             rtc_region: None,
-            thread_metadata: None,
-            topic: None,
             user_limit: None,
-            video_quality_mode: None,
         }]);
 
         let threads = Vec::from([Channel {
-            application_id: None,
-            applied_tags: None,
-            available_tags: None,
-            bitrate: None,
-            default_auto_archive_duration: None,
-            default_forum_layout: None,
-            default_reaction_emoji: None,
-            default_sort_order: None,
-            default_thread_rate_limit_per_user: None,
-            flags: None,
             guild_id: None,
-            icon: None,
             id: Id::new(222),
-            invitable: None,
             kind: ChannelType::PublicThread,
-            last_message_id: None,
-            last_pin_timestamp: None,
-            managed: Some(true),
-            member: Some(ThreadMember {
-                flags: 0,
-                id: Some(Id::new(1)),
-                join_timestamp: timestamp,
-                member: None,
-                presence: None,
-                user_id: Some(Id::new(2)),
-            }),
-            member_count: Some(0),
-            message_count: Some(0),
-            name: Some("guild thread with no guild id".to_owned()),
-            newly_created: None,
-            nsfw: None,
-            owner_id: None,
             parent_id: None,
             permission_overwrites: None,
             position: None,
-            rate_limit_per_user: None,
-            recipients: None,
             rtc_region: None,
-            thread_metadata: Some(ThreadMetadata {
-                archived: false,
-                auto_archive_duration: AutoArchiveDuration::Hour,
-                archive_timestamp: timestamp,
-                create_timestamp: Some(timestamp),
-                invitable: None,
-                locked: false,
-            }),
-            topic: None,
             user_limit: None,
-            video_quality_mode: None,
         }]);
 
         let guild = Guild {

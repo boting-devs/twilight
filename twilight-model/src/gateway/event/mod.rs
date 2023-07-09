@@ -37,13 +37,13 @@ pub enum Event {
     /// A user's ban from a guild was removed.
     BanRemove(BanRemove),
     /// A channel was created.
-    ChannelCreate(Box<ChannelCreate>),
+    ChannelCreate(ChannelCreate),
     /// A channel was deleted.
-    ChannelDelete(Box<ChannelDelete>),
+    ChannelDelete(ChannelDelete),
     /// A channel's pins were updated.
     ChannelPinsUpdate(ChannelPinsUpdate),
     /// A channel was updated.
-    ChannelUpdate(Box<ChannelUpdate>),
+    ChannelUpdate(ChannelUpdate),
     /// A command's permissions were updated.
     CommandPermissionsUpdate(CommandPermissionsUpdate),
     /// Close message with an optional frame including information about the
@@ -148,7 +148,7 @@ pub enum Event {
     StageInstanceUpdate(StageInstanceUpdate),
     /// A thread has been created, relevant to the current user,
     /// or the current user has been added to a thread.
-    ThreadCreate(Box<ThreadCreate>),
+    ThreadCreate(ThreadCreate),
     /// A thread, relevant to the current user, has been deleted.
     ThreadDelete(ThreadDelete),
     /// The current user has gained access to a thread.
@@ -158,7 +158,7 @@ pub enum Event {
     /// A user has been added to or removed from a thread.
     ThreadMembersUpdate(ThreadMembersUpdate),
     /// A thread has been updated.
-    ThreadUpdate(Box<ThreadUpdate>),
+    ThreadUpdate(ThreadUpdate),
     /// A user started typing in a channel.
     TypingStart(Box<TypingStart>),
     /// A guild is now unavailable.
@@ -483,9 +483,6 @@ mod tests {
     const_assert!(mem::size_of::<AutoModerationRuleCreate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<AutoModerationRuleDelete>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<AutoModerationRuleUpdate>() > EVENT_THRESHOLD);
-    const_assert!(mem::size_of::<ChannelCreate>() > EVENT_THRESHOLD);
-    const_assert!(mem::size_of::<ChannelDelete>() > EVENT_THRESHOLD);
-    const_assert!(mem::size_of::<ChannelUpdate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildScheduledEventCreate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildScheduledEventDelete>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildScheduledEventUpdate>() > EVENT_THRESHOLD);
@@ -501,9 +498,7 @@ mod tests {
     const_assert!(mem::size_of::<ReactionAdd>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<ReactionRemove>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<Ready>() > EVENT_THRESHOLD);
-    const_assert!(mem::size_of::<ThreadCreate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<ThreadMemberUpdate>() > EVENT_THRESHOLD);
-    const_assert!(mem::size_of::<ThreadUpdate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<TypingStart>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<VoiceStateUpdate>() > EVENT_THRESHOLD);
 
@@ -511,6 +506,9 @@ mod tests {
     const_assert!(mem::size_of::<AutoModerationActionExecution>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<BanAdd>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<BanRemove>() <= EVENT_THRESHOLD);
+    const_assert!(mem::size_of::<ChannelCreate>() <= EVENT_THRESHOLD);
+    const_assert!(mem::size_of::<ChannelDelete>() <= EVENT_THRESHOLD);
+    const_assert!(mem::size_of::<ChannelUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<ChannelPinsUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<CommandPermissionsUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildUpdate>() <= EVENT_THRESHOLD);
@@ -534,7 +532,9 @@ mod tests {
     const_assert!(mem::size_of::<StageInstanceUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<ThreadDelete>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<ThreadListSync>() <= EVENT_THRESHOLD);
+    const_assert!(mem::size_of::<ThreadCreate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<ThreadMembersUpdate>() <= EVENT_THRESHOLD);
+    const_assert!(mem::size_of::<ThreadUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<UnavailableGuild>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<UserUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<VoiceServerUpdate>() <= EVENT_THRESHOLD);

@@ -1,7 +1,7 @@
 use crate::{config::ResourceType, InMemoryCache, UpdateCache};
 use twilight_model::{
     channel::Channel,
-    gateway::payload::incoming::{ChannelCreate, ChannelDelete, ChannelPinsUpdate, ChannelUpdate},
+    gateway::payload::incoming::{ChannelCreate, ChannelDelete, ChannelUpdate},
     id::{marker::ChannelMarker, Id},
 };
 
@@ -60,18 +60,6 @@ impl UpdateCache for ChannelDelete {
     }
 }
 
-impl UpdateCache for ChannelPinsUpdate {
-    fn update(self, cache: &InMemoryCache) {
-        if !cache.wants(ResourceType::CHANNEL) {
-            return;
-        }
-
-        if let Some(mut channel) = cache.channels.get_mut(&self.channel_id) {
-            channel.last_pin_timestamp = self.last_pin_timestamp;
-        }
-    }
-}
-
 impl UpdateCache for ChannelUpdate {
     fn update(self, cache: &InMemoryCache) {
         if !cache.wants(ResourceType::CHANNEL) {
@@ -103,7 +91,7 @@ mod tests {
             .unwrap()
             .contains(&channel_id));
 
-        cache.update(Event::ChannelDelete(Box::new(ChannelDelete(channel))));
+        cache.update(Event::ChannelDelete(ChannelDelete(channel)));
         assert!(cache.channels.is_empty());
         assert!(cache.guild_channels.get(&guild_id).unwrap().is_empty());
     }

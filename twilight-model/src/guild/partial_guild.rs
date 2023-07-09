@@ -1,11 +1,7 @@
-use super::{
-    Permissions, Role
-};
-use crate::{
-    id::{
-        marker::{GuildMarker, UserMarker},
-        Id,
-    },
+use super::{Permissions, Role};
+use crate::id::{
+    marker::{GuildMarker, UserMarker},
+    Id,
 };
 use serde::{Deserialize, Serialize};
 
@@ -23,14 +19,9 @@ pub struct PartialGuild {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        test::image_hash,
-    };
+    use crate::test::image_hash;
 
-    use super::{
-        PartialGuild,
-        Permissions,
-    };
+    use super::{PartialGuild, Permissions};
     use crate::id::Id;
     use serde_test::Token;
 
