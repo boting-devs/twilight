@@ -86,7 +86,7 @@ pub enum Event {
     /// A guild's stickers were updated.
     GuildStickersUpdate(GuildStickersUpdate),
     /// A guild was updated.
-    GuildUpdate(Box<GuildUpdate>),
+    GuildUpdate(GuildUpdate),
     /// A guild integration was created.
     IntegrationCreate(Box<IntegrationCreate>),
     /// A guild integration was deleted.
@@ -489,7 +489,6 @@ mod tests {
     const_assert!(mem::size_of::<GuildScheduledEventCreate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildScheduledEventDelete>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildScheduledEventUpdate>() > EVENT_THRESHOLD);
-    const_assert!(mem::size_of::<GuildUpdate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<IntegrationCreate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<IntegrationUpdate>() > EVENT_THRESHOLD);
     const_assert!(mem::size_of::<InviteCreate>() > EVENT_THRESHOLD);
@@ -514,6 +513,7 @@ mod tests {
     const_assert!(mem::size_of::<BanRemove>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<ChannelPinsUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<CommandPermissionsUpdate>() <= EVENT_THRESHOLD);
+    const_assert!(mem::size_of::<GuildUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildDelete>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildEmojisUpdate>() <= EVENT_THRESHOLD);
     const_assert!(mem::size_of::<GuildIntegrationsUpdate>() <= EVENT_THRESHOLD);

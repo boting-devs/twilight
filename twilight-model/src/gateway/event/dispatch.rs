@@ -37,7 +37,7 @@ pub enum DispatchEvent {
     GuildScheduledEventUserAdd(GuildScheduledEventUserAdd),
     GuildScheduledEventUserRemove(GuildScheduledEventUserRemove),
     GuildStickersUpdate(GuildStickersUpdate),
-    GuildUpdate(Box<GuildUpdate>),
+    GuildUpdate(GuildUpdate),
     IntegrationCreate(Box<IntegrationCreate>),
     IntegrationDelete(IntegrationDelete),
     IntegrationUpdate(Box<IntegrationUpdate>),
@@ -332,7 +332,7 @@ impl<'de, 'a> DeserializeSeed<'de> for DispatchEventWithTypeDeserializer<'a> {
                 DispatchEvent::GuildStickersUpdate(GuildStickersUpdate::deserialize(deserializer)?)
             }
             "GUILD_UPDATE" => {
-                DispatchEvent::GuildUpdate(Box::new(GuildUpdate::deserialize(deserializer)?))
+                DispatchEvent::GuildUpdate(GuildUpdate::deserialize(deserializer)?)
             }
             "INTEGRATION_CREATE" => DispatchEvent::IntegrationCreate(Box::new(
                 IntegrationCreate::deserialize(deserializer)?,
