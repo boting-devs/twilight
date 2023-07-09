@@ -1,41 +1,15 @@
-use super::RoleTags;
 use crate::{
     guild::Permissions,
     id::{marker::RoleMarker, Id},
-    util::image_hash::ImageHash,
 };
 use serde::{Deserialize, Serialize};
 use std::cmp::{Ord, Ordering, PartialOrd};
 
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Role {
-    pub color: u32,
-    pub hoist: bool,
-    /// Icon image hash.
-    ///
-    /// Present if the guild has the `ROLE_ICONS` feature and if the role has
-    /// one.
-    ///
-    /// See [Discord Docs/Image Formatting].
-    ///
-    /// [Discord Docs/Image Formatting]: https://discord.com/developers/docs/reference#image-formatting
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub icon: Option<ImageHash>,
     pub id: Id<RoleMarker>,
-    pub managed: bool,
-    pub mentionable: bool,
-    pub name: String,
     pub permissions: Permissions,
     pub position: i64,
-    /// Tags about the role.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<RoleTags>,
-    /// Icon unicode emoji.
-    ///
-    /// Present if the guild has the `ROLE_ICONS` feature and if the role has
-    /// one.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub unicode_emoji: Option<String>,
 }
 
 impl Ord for Role {
@@ -149,19 +123,7 @@ mod tests {
     use static_assertions::{assert_fields, assert_impl_all};
     use std::{fmt::Debug, hash::Hash};
 
-    assert_fields!(
-        Role: color,
-        hoist,
-        icon,
-        id,
-        managed,
-        mentionable,
-        name,
-        permissions,
-        position,
-        tags,
-        unicode_emoji
-    );
+    assert_fields!(Role: id, permissions, position);
 
     assert_impl_all!(
         Role: Clone,
@@ -176,17 +138,9 @@ mod tests {
     #[test]
     fn role() {
         let role = Role {
-            color: 0,
-            hoist: true,
-            icon: None,
             id: Id::new(123),
-            managed: false,
-            mentionable: true,
-            name: "test".to_owned(),
             permissions: Permissions::ADMINISTRATOR,
             position: 12,
-            tags: None,
-            unicode_emoji: None,
         };
 
         serde_test::assert_tokens(
@@ -196,19 +150,9 @@ mod tests {
                     name: "Role",
                     len: 8,
                 },
-                Token::Str("color"),
-                Token::U32(0),
-                Token::Str("hoist"),
-                Token::Bool(true),
                 Token::Str("id"),
                 Token::NewtypeStruct { name: "Id" },
                 Token::Str("123"),
-                Token::Str("managed"),
-                Token::Bool(false),
-                Token::Str("mentionable"),
-                Token::Bool(true),
-                Token::Str("name"),
-                Token::Str("test"),
                 Token::Str("permissions"),
                 Token::Str("8"),
                 Token::Str("position"),
